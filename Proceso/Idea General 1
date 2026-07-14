@@ -1,0 +1,370 @@
+# UNITY + TOUCHDESIGNER CUSTOM RENDERER WORKFLOW
+
+## PROJECT GOAL
+
+Create a DOOM-style interactive game where:
+
+UNITY = GAMEPLAY / SIMULATION ENGINE
+TOUCHDESIGNER = CUSTOM REAL-TIME VISUAL RENDERER
+
+## UNITY RESPONSIBILITIES
+
+Unity handles:
+
+* Player movement
+* FPS controls
+* Weapons
+* Enemy AI
+* Physics
+* Collision
+* Level logic
+* Game state
+* Audio playback
+* Object spawning
+
+## TOUCHDESIGNER RESPONSIBILITIES
+
+TouchDesigner handles:
+
+* Particle rendering
+* Sprite visualization
+* Outline effects
+* Procedural graphics
+* Audio-reactive visuals
+* GLSL shaders
+* Lighting effects
+* Post-processing
+
+# FINAL PIPELINE
+
+Player Input
+|
+v
+UNITY
+|
+|  OSC / UDP
+|
+v
+TOUCHDESIGNER
+|
+v
+Final Display
+
+# IMPORTANT IDEA
+
+Unity does not send the final image.
+
+Unity sends information about the world.
+
+Example data:
+
+Camera:
+
+* Position
+* Rotation
+* Field of view
+
+Player:
+
+* Position
+* Rotation
+* State
+
+Enemies:
+
+* ID
+* Position
+* Rotation
+* Animation frame
+* Health
+
+Weapons:
+
+* Bullet positions
+* Impacts
+* Explosions
+
+Audio:
+
+* Beat intensity
+* Bass
+* Frequency energy
+
+TouchDesigner interprets this information and creates the visuals.
+
+# LEARNING ROADMAP
+
+## PHASE 1 — UNITY BASICS
+
+Learn:
+
+* C# scripting
+* GameObjects
+* Components
+* Transforms
+* Prefabs
+* Animation
+* Physics
+* Raycasting
+* FPS controllers
+
+Goal:
+
+Create a small playable FPS arena.
+
+## PHASE 2 — TOUCHDESIGNER BASICS
+
+Learn:
+
+TOPs:
+
+* Images
+* Textures
+* Compositing
+* Feedback effects
+
+CHOPs:
+
+* Data processing
+* Audio analysis
+* OSC input
+
+SOPs:
+
+* Geometry
+* Points
+* Instancing
+
+DATs:
+
+* Data tables
+* Network communication
+
+GLSL:
+
+* GPU shaders
+* Custom effects
+
+Goal:
+
+Create a GPU particle visual system.
+
+## PHASE 3 — UNITY TO TOUCHDESIGNER COMMUNICATION
+
+Learn:
+
+* OSC
+* UDP
+* Sending transforms
+* Receiving messages
+
+First prototype:
+
+Unity cube position
+
+```
+    |
+
+    v
+```
+
+OSC message
+
+```
+    |
+
+    v
+```
+
+TouchDesigner particle position
+
+Goal:
+
+Control TouchDesigner visuals using Unity data.
+
+## PHASE 4 — BUILD THE RENDERER
+
+Renderer workflow:
+
+1. Receive scene data
+
+2. Update objects
+
+3. Render sprites
+
+4. Extract outlines
+
+5. Convert outlines into particles
+
+6. Add effects
+
+7. Composite final image
+
+# VISUAL SYSTEMS
+
+SPRITE SYSTEM
+
+Learn:
+
+* Sprite sheets
+* Animation frames
+* Billboard rendering
+
+PARTICLE SYSTEM
+
+Learn:
+
+* GPU particles
+* Instancing
+* Trails
+* Explosions
+
+AUDIO SYSTEM
+
+Learn:
+
+* Beat detection
+* Frequency analysis
+* Reactive animation
+
+EFFECTS
+
+Build:
+
+* Bloom
+* Glow
+* Distortion
+* Color changes
+* Motion effects
+
+# FIVE WEEK DEVELOPMENT PLAN
+
+WEEK 1 — COMMUNICATION PROTOTYPE
+
+Unity:
+
+* Create FPS controller
+* Add enemies
+* Send positions through OSC/UDP
+
+TouchDesigner:
+
+* Receive data
+* Display points
+* Match camera movement
+
+Result:
+
+Unity objects appear inside TouchDesigner.
+
+WEEK 2 — BASIC RENDERER
+
+Build:
+
+* Camera system
+* Sprite rendering
+* Enemy visualization
+* Basic environment
+
+Result:
+
+Playable scene rendered through TouchDesigner.
+
+WEEK 3 — VISUAL IDENTITY
+
+Add:
+
+* Particle outlines
+* Bullet trails
+* Explosions
+* Music reactions
+* GLSL effects
+
+Result:
+
+The game develops its own visual style.
+
+WEEK 4 — OPTIMIZATION
+
+Improve:
+
+* GPU performance
+* Particle limits
+* Object pooling
+* Network efficiency
+* Frame stability
+
+Target:
+
+60 FPS.
+
+WEEK 5 — PRESENTATION
+
+Create:
+
+* One polished level
+* One soundtrack
+* Gameplay recording
+* Portfolio presentation
+
+Focus on polish, not adding new systems.
+
+# FIRST EXPERIMENTS
+
+Experiment 1:
+
+Unity cube → TouchDesigner particle
+
+Experiment 2:
+
+Unity enemy position → TouchDesigner sprite
+
+Experiment 3:
+
+Sprite texture → outline detection → particles
+
+Experiment 4:
+
+Music frequency → particle movement
+
+Experiment 5:
+
+Explosion event → particle burst
+
+# PERFORMANCE RULES
+
+Avoid sending:
+
+* Complete frames
+* Static information every frame
+* Unnecessary object data
+
+Send:
+
+* Object positions
+* Rotations
+* Animation states
+* Events
+
+Use:
+
+* GPU instancing
+* GLSL shaders
+* Object pooling
+* Culling
+
+# FINAL PROJECT VISION
+
+A DOOM-inspired FPS where:
+
+* Unity controls gameplay.
+* TouchDesigner controls the appearance.
+* Sprites remain recognizable.
+* Outlines become particles.
+* Music changes the environment.
+* Explosions create visual events.
+* The renderer behaves like a live VJ system.
+
+The goal is not to replace Unity.
+
+The goal is to create a custom visual interpretation of a game world.
