@@ -1,0 +1,113 @@
+### Strudel studies
+
+# I started using strudel to create simple repetitive musical piezes.
+# the cpm is used to track how fast the song plays using the time of each cicle instead of the times of the notes.
+
+```javascript
+setcpm(95)
+
+let drum = stack(
+  s("bd").beat("0,3,8,11",16),
+  s("cp").beat("4,12",16),
+  s("hh").beat("0,2,4,6,8,10,12,14",16),
+  s("oh").beat("7,15",16)
+).bank("RolandTr909");
+
+$drum: drum
+
+let harmony =
+  chord("<Em Em C G Am B7>")
+    .voicing()
+    .slow(2)
+    .s("gm_overdriven_guitar")
+    .gain(0.9);
+
+$harmony: harmony
+```
+
+#After this initial exploration and with the help of AI, I managed to create a more complex piece
+
+```javascript
+setcpm(25)
+
+//--------------------------------------------------
+// DRUMS
+//--------------------------------------------------
+
+let kick = s("bd")
+  .beat("<0,8 0,3,8,11 0,2,3,6,8,10,11,14 0,2,3,6,8,10,11,14>",16)
+
+let snare = s("cp")
+  .beat("4,12",16)
+
+let hats = s("hh")
+  .beat("0,2,4,6,8,10,12,14",16)
+
+let open = s("oh")
+  .beat("<~ ~ 7,15 7,15>",16)
+
+let fill = s("cp")
+  .beat("<~ ~ ~ 12,13,14,15>",16)
+
+let drum = stack(
+  kick,
+  snare,
+  hats,
+  open,
+  fill
+).bank("RolandTr909")
+
+$drum: drum
+
+//--------------------------------------------------
+// RHYTHM GUITAR
+//--------------------------------------------------
+
+let rhythm =
+  chord("<Em Em Em Em G G D D C C Am Am Em Em B7 B7>")
+  .voicing()
+  .slow(4)
+  .s("gm_overdriven_guitar")
+  .gain(0.9)
+
+$rhythm: rhythm
+
+//--------------------------------------------------
+// BASS
+//--------------------------------------------------
+
+let bass =
+  note("<e2 e2 e2 e2 g2 g2 d2 d2 c2 c2 a1 a1 e2 e2 b1 b1>")
+  .slow(4)
+  .s("gm_fingered_bass")
+  .gain(1)
+
+$bass: bass
+
+//--------------------------------------------------
+// LEAD GUITAR
+//--------------------------------------------------
+
+let lead =
+  note("<~ ~ e5 g5 b5 g5 d6 b5 g5 e5 g5 a5 b5 d6 b5 g5 e5 r e6 d6 b5 g5 e5 r r r>")
+    .fast(2)
+    .s("gm_lead_8_bass_lead")
+    .gain(0.7);
+
+$lead: lead
+
+
+//--------------------------------------------------
+// PAD
+//--------------------------------------------------
+
+let pad =
+  chord("<Em G D C>")
+  .voicing()
+  .slow(16)
+  .s("gm_warm_pad")
+  .gain(0.35)
+
+$pad: pad
+
+```
