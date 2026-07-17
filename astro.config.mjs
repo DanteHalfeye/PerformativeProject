@@ -5,6 +5,12 @@ import starlightCatppuccin from '@catppuccin/starlight'
 
 // https://astro.build/config
 export default defineConfig({
+
+	  site: 'https://dantehalfeye.github.io',
+  	  base: '/PerformativeProject/',
+
+
+
 	integrations: [
 		starlight({
 			plugins: [starlightCatppuccin({dark: { flavor: "mocha", accent: "red" }, light: { flavor: "latte", accent: "flamingo" }, }),],
