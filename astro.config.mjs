@@ -22,16 +22,16 @@ export default defineConfig({
 					label: 'Logs',
 					items: [
 						// Each item here is one entry in the navigation menu.
-						{ label: 'Idea 1', link: 'logs/idea1' },
-						{ label: 'Idea 2', link: 'logs/idea2' },
-						{ label: 'Musical Exploration', link: 'logs/musicalexploration' },
+						{ label: 'Idea 1', link: '/logs/idea1' },
+						{ label: 'Idea 2', link: '/logs/idea2' },
+						{ label: 'Musical Exploration', link: '/logs/musicalexploration' },
 					],
 				},
 				{
 					label: 'References',
 					items: [
 						// Each item here is one entry in the navigation menu.
-						{ label: 'References', link: 'references/references' },
+						{ label: 'References', link: '/references/references' },
 					
 					],
 				},
