@@ -14,7 +14,9 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			plugins: [starlightCatppuccin({dark: { flavor: "mocha", accent: "red" }, light: { flavor: "latte", accent: "flamingo" }, }),],
-			logo: {src: './src/assets/Pokemon.png'},
+			logo: {
+ 			 src: "./src/assets/Pokemon.png",
+ 			 alt: "Performative",
 			title: 'Performative',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/DanteHalfeye/PerformativeProject' }],
 			sidebar: [
