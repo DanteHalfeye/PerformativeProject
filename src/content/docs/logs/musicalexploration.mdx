@@ -3,6 +3,7 @@ title: Strudel studies
 description: A guide in my new Starlight docs site.
 ---
 
+### Day 1
 
 I started using strudel to create simple repetitive musical piezes.
 the cpm is used to track how fast the song plays using the time of each cicle instead of the times of the notes.
@@ -115,3 +116,104 @@ let pad =
 $pad: pad
 
 ```
+
+### Day 2
+
+After the initial exploration I decided to port one of my musical pieces done in MuseScore into strudel
+
+```javascript
+setcps(5/6)
+
+// BAR 1
+const bar1 = stack(
+  note("e3 g3 e3 g3 e3 g3 e3 g3")
+    .sound("gm_overdriven_guitar"),
+  stack(
+    sound("hh*8"),
+    sound("bd ~ bd ~"),
+    sound("~ sd ~ sd")
+  ),
+  note("g3").sound("organ"),
+  note("g1").sound("bass")
+)
+
+// BAR 2
+const bar2 = stack(
+  note("g4 d3 b2 g4 d3 b2 g4 d3")
+    .sound("gm_overdriven_guitar"),
+  stack(
+    sound("hh*8"),
+    sound("bd ~ bd ~"),
+    sound("~ sd ~ sd")
+  ),
+  note("d3").sound("organ"),
+  note("d1").sound("bass")
+)
+
+// BAR 3
+const bar3 = stack(
+  note("g3 c4 g3 c4 g3 c4 g3 c4")
+    .sound("gm_overdriven_guitar"),
+  stack(
+    sound("hh*8"),
+    sound("bd ~ bd ~"),
+    sound("~ sd ~ sd")
+  ),
+  note("d3").sound("organ"),
+  note("d1").sound("bass")
+)
+
+// BAR 4
+const bar4 = stack(
+  note("c4 g3 fs3 d3 c4 g3 fs3 d3")
+    .sound("gm_overdriven_guitar"),
+  stack(
+    sound("hh*8"),
+    sound("bd ~ bd ~"),
+    sound("~ sd ~ sd")
+  ),
+  note("f3").sound("organ"),
+  note("f1").sound("bass")
+)
+// TRANSITION
+const transition = stack(
+  note("<e3 b3> <e3 b3> <e3 b3> <e3 b3> <f3 c4> <f3 c4> <f3 c4> <f3 c4>")
+    .sound("gm_overdriven_guitar"),
+  stack(
+    sound("hh*8"),
+    sound("bd ~ bd ~"),
+    sound("~ sd ~ sd")
+  ),
+  note("g1 e1").sound("bass")
+)
+
+cat(
+  // First riff
+  bar1,
+  bar2,
+  bar3,
+  bar4,
+
+  // Second riff
+  bar1,
+  bar2,
+  bar3,
+  bar4,
+
+  // Transition
+  transition
+
+)
+
+```
+
+With this I learned about the cat and stack funtions
+
+##cat()
+
+It plays secuentially
+
+##stack()
+
+It plays simultaneously
+
