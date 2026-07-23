@@ -30,7 +30,7 @@ let harmony =
 $harmony: harmony
 ```
 
-#After this initial exploration and with the help of AI, I managed to create a more complex piece
+# After this initial exploration and with the help of AI, I managed to create a more complex piece
 
 ```javascript
 setcpm(25)
@@ -209,11 +209,35 @@ cat(
 
 With this I learned about the cat and stack funtions
 
-## cat()
+# cat()
 
-It plays secuentially
+The given items are concatenated, where each one takes one cycle.
 
-## stack()
+# stack()
 
-It plays simultaneously
+The given items are played at the same time at the same length.
+
+### Day 3
+
+
+# seq()
+Like cat, but the items are crammed into one cycle.
+
+# stepcat()
+'Concatenates' patterns like fastcat, but proportional to a number of steps per cycle. The steps can either be inferred from the pattern, or provided as a [length, pattern] pair. Has the alias timecat.
+
+# arrange()
+Allows to arrange multiple patterns together over multiple cycles. Takes a variable number of arrays with two elements specifying the number of cycles and the pattern to use.
+
+# polymeter()
+Aligns the steps of the patterns, creating polymeters. The patterns are repeated until they all fit the cycle. For example, in the below the first pattern is repeated twice, and the second is repeated three times, to fit the lowest common multiple of six steps.
+
+# silence()
+Does absolutely nothing..
+
+We can use different tools to visualize our songs and different effects to recreate spaces.
+
+There are a lot.
+
+Follow this page to learn more about [hypertext](https://strudel.cc/workshop/getting-started/).
 
