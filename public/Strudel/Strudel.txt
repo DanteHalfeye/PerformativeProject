@@ -1,0 +1,78 @@
+setcps(110/60/4)
+
+// 0 = OFF, 1 = ON
+const block1 = 1
+const block2 = 1
+const block3 = 1
+const block4 = 1
+
+// MEDIEVAL ROCK: D minor
+// BLOCK 1: Driving war drums
+$: block1
+  ? s("bd ~ sd ~, ~ ~ bd ~")
+      .gain(0.85)
+  : silence
+
+// BLOCK 1 OSC: Individual obstacle spawns
+$: block1
+  ? s("spawn ~ ~ ~ ~ ~ ~ ~").osc()
+  : silence
+
+// BLOCK 2: Dark electric-rock bass
+$: block2
+  ? note("<d2 d2 f2 c2>")
+      .s("sawtooth")
+      .lpf(500)
+      .distort(0.35)
+      .gain(0.45)
+  : silence
+
+// BLOCK 2 OSC: Occasional increase in spawn rate
+$: block2
+  ? s("~ ~ ~ increaseRate ~ ~ ~ ~").osc()
+  : silence
+
+// BLOCK 3: Medieval lute / bard melody
+$: block3
+  ? note("<d4 f4 a4 c5 a4 f4 e4 d4>")
+      .s("gm_acoustic_guitar_nylon")
+      .slow(2)
+      .gain(0.65)
+      .room(0.25)
+  : silence
+
+// BLOCK 3 OSC: Obstacle bursts
+$: block3
+  ? s("~ ~ ~ ~ ~ ~ ~ burst").osc()
+  : silence
+
+// BLOCK 4: Galloping rock percussion
+$: block4
+  ? s("hh*8").gain(0.3)
+  : silence
+
+// BLOCK 4 OSC: Occasional obstacle spawn
+$: block4
+  ? s("~ ~ ~ ~ spawn ~ ~ ~").osc()
+  : silence
+
+// ADDITIONAL MUSIC: Power-chord progression
+$: note("<[d3,a3,d4] [bb2,f3,bb3] [f3,c4,f4] [c3,g3,c4]>")
+  .s("sawtooth")
+  .lpf(1400)
+  .distort(0.55)
+  .slow(2)
+  .gain(0.3)
+
+// ADDITIONAL MUSIC: Galloping low strings
+$: note("<d2 d2 d2 a2 bb1 bb1 bb1 f2 f1 f1 f1 c2 c2 c2 c2 a1>")
+  .s("sawtooth")
+  .lpf(700)
+  .gain(0.25)
+
+// ADDITIONAL MUSIC: High heroic melody
+$: note("<a4 c5 d5 f5 e5 d5 c5 a4>")
+  .s("triangle")
+  .slow(2)
+  .gain(0.2)
+  .room(0.35)
