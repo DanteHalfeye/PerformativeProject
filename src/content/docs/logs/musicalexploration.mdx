@@ -1,12 +1,27 @@
 ---
-title: Strudel studies
-description: A guide in my new Starlight docs site.
+title: Strudel Studies
+description: A technical development log exploring live-coded music, OSC communication, and interactive gameplay by connecting Strudel to a Unity endless runner.
 ---
 
-### Day 1
+# Strudel Studies
 
-I started using strudel to create simple repetitive musical piezes.
-the cpm is used to track how fast the song plays using the time of each cicle instead of the times of the notes.
+This project explores how music created through live coding can interact with a video game in real time. I began by experimenting with Strudel's pattern language to create repetitive musical pieces, then recreated a composition originally written in MuseScore. Later, I connected Strudel to a Unity endless runner through Open Sound Control (OSC), allowing musical patterns to trigger obstacle spawning and modify gameplay.
+
+The project combines three main areas:
+
+- **Procedural music:** Creating rhythms, melodies, chord progressions, and layered arrangements through code.
+- **Gameplay programming:** Implementing an obstacle spawner in Unity that responds to external commands.
+- **Application communication:** Using OSC and a Node.js bridge to connect Strudel's browser-based environment to Unity.
+
+## Day 1 — Exploring Strudel
+
+I started using [Strudel](https://strudel.cc/) to create simple, repetitive musical pieces. Instead of manually placing notes in a traditional music editor, I described musical patterns through code and experimented with their timing, instrumentation, and arrangement.
+
+### Understanding tempo
+
+Strudel supports tempo control through cycles per second (CPS) and cycles per minute (CPM). A cycle is a unit of musical time that can contain multiple events.
+
+For my first experiment, I used `setcpm(95)` to establish the tempo.
 
 ```javascript
 setcpm(95)
@@ -30,96 +45,38 @@ let harmony =
 $harmony: harmony
 ```
 
-#### After this initial exploration and with the help of AI, I managed to create a more complex piece
+The drum pattern combines four different sounds:
 
-```javascript
-setcpm(25)
+- `bd`: kick drum.
+- `cp`: clap or snare-like percussion.
+- `hh`: closed hi-hat.
+- `oh`: open hi-hat.
 
-//--------------------------------------------------
-// DRUMS
-//--------------------------------------------------
+The `.beat()` function places events at specific steps within a cycle. The `.bank()` function selects the sample bank, in this case `RolandTr909`.
 
-let kick = s("bd")
-  .beat("<0,8 0,3,8,11 0,2,3,6,8,10,11,14 0,2,3,6,8,10,11,14>",16)
+The harmony pattern uses `chord()` to define a progression and `.voicing()` to turn the chords into playable notes. The `.slow(2)` function stretches the pattern over twice its original duration, while `.gain(0.9)` adjusts its volume.
 
-let snare = s("cp")
-  .beat("4,12",16)
+### Building a more complex arrangement
 
-let hats = s("hh")
-  .beat("0,2,4,6,8,10,12,14",16)
+After this initial exploration, I used AI as a learning and prototyping assistant to develop a more complex piece. I separated the composition into several independent layers:
 
-let open = s("oh")
-  .beat("<~ ~ 7,15 7,15>",16)
+- Drums for the rhythmic foundation.
+- Rhythm guitar for the chord progression.
+- Bass for the low frequencies.
+- Lead guitar for the melody.
+- A pad for sustained harmonic support.
 
-let fill = s("cp")
-  .beat("<~ ~ ~ 12,13,14,15>",16)
+Each layer was represented by a separate pattern, making it possible to adjust the rhythm, notes, and instrumentation independently.
 
-let drum = stack(
-  kick,
-  snare,
-  hats,
-  open,
-  fill
-).bank("RolandTr909")
+This introduced me to a modular approach to composition: instead of defining an entire song as one large pattern, I could build it from smaller musical components.
 
-$drum: drum
+## Day 2 — Translating a MuseScore composition into Strudel
 
-//--------------------------------------------------
-// RHYTHM GUITAR
-//--------------------------------------------------
+After exploring the basics, I decided to recreate one of my musical pieces originally composed in MuseScore.
 
-let rhythm =
-  chord("<Em Em Em Em G G D D C C Am Am Em Em B7 B7>")
-  .voicing()
-  .slow(4)
-  .s("gm_overdriven_guitar")
-  .gain(0.9)
+I divided the composition into individual bars and a transition. Each bar used `stack()` to combine the guitar, drums, organ, and bass.
 
-$rhythm: rhythm
-
-//--------------------------------------------------
-// BASS
-//--------------------------------------------------
-
-let bass =
-  note("<e2 e2 e2 e2 g2 g2 d2 d2 c2 c2 a1 a1 e2 e2 b1 b1>")
-  .slow(4)
-  .s("gm_fingered_bass")
-  .gain(1)
-
-$bass: bass
-
-//--------------------------------------------------
-// LEAD GUITAR
-//--------------------------------------------------
-
-let lead =
-  note("<~ ~ e5 g5 b5 g5 d6 b5 g5 e5 g5 a5 b5 d6 b5 g5 e5 r e6 d6 b5 g5 e5 r r r>")
-    .fast(2)
-    .s("gm_lead_8_bass_lead")
-    .gain(0.7);
-
-$lead: lead
-
-
-//--------------------------------------------------
-// PAD
-//--------------------------------------------------
-
-let pad =
-  chord("<Em G D C>")
-  .voicing()
-  .slow(16)
-  .s("gm_warm_pad")
-  .gain(0.35)
-
-$pad: pad
-
-```
-
-### Day 2
-
-After the initial exploration I decided to port one of my musical pieces done in MuseScore into strudel
+For example:
 
 ```javascript
 setcps(5/6)
@@ -175,6 +132,7 @@ const bar4 = stack(
   note("f3").sound("organ"),
   note("f1").sound("bass")
 )
+
 // TRANSITION
 const transition = stack(
   note("<e3 b3> <e3 b3> <e3 b3> <e3 b3> <f3 c4> <f3 c4> <f3 c4> <f3 c4>")
@@ -188,56 +146,536 @@ const transition = stack(
 )
 
 cat(
-  // First riff
   bar1,
   bar2,
   bar3,
   bar4,
-
-  // Second riff
   bar1,
   bar2,
   bar3,
   bar4,
-
-  // Transition
   transition
-
 )
-
 ```
 
-With this I learned about the cat and stack funtions
+The guitar provides the repeating melodic and harmonic material, while the drums establish the rhythm. The organ and bass reinforce the harmony.
 
-#### cat()
+### `stack()`
 
-The given items are concatenated, where each one takes one cycle.
+`stack()` plays multiple patterns simultaneously. I used it to combine instruments into a single musical section while keeping their individual patterns editable.
 
-#### stack()
+### `cat()`
 
-The given items are played at the same time at the same length.
+`cat()` concatenates patterns sequentially, with each supplied pattern occupying one cycle. I used it to arrange the four bars, repeat the main section, and append a transition.
 
-### Day 3
+Learning these functions helped me understand how to construct a complete arrangement from reusable musical sections.
 
+## Day 3 — Exploring sequencing and effects
 
-#### seq()
-Like cat, but the items are crammed into one cycle.
+I continued exploring the ways Strudel can manipulate patterns and arrange musical structures.
 
-#### stepcat()
-'Concatenates' patterns like fastcat, but proportional to a number of steps per cycle. The steps can either be inferred from the pattern, or provided as a [length, pattern] pair. Has the alias timecat.
+| Function | Purpose |
+|---|---|
+| `seq()` | Sequences patterns within a cycle. |
+| `stepcat()` | Concatenates patterns according to their step lengths; also known as `timecat`. |
+| `arrange()` | Arranges patterns over specified numbers of cycles. |
+| `polymeter()` | Combines patterns with different step counts into repeating polymetric structures. |
+| `silence` | Represents a pattern that produces no events. |
 
-#### arrange()
-Allows to arrange multiple patterns together over multiple cycles. Takes a variable number of arrays with two elements specifying the number of cycles and the pattern to use.
+I also explored effects and sound visualization. These tools made it possible to change the character of sounds and better understand how musical patterns behave over time.
 
-#### polymeter()
-Aligns the steps of the patterns, creating polymeters. The patterns are repeated until they all fit the cycle. For example, in the below the first pattern is repeated twice, and the second is repeated three times, to fit the lowest common multiple of six steps.
+Reference: [Strudel Workshop — Getting Started](https://strudel.cc/workshop/getting-started/).
 
-#### silence()
-Does absolutely nothing..
+## Day 4 — Connecting Strudel to Unity through OSC
 
-We can use different tools to visualize our songs and different effects to recreate spaces.
+Once I was comfortable creating musical patterns, I wanted to use them to control a Unity endless runner.
 
-There are a lot.
+The idea was to make musical events trigger gameplay actions. Instead of Unity generating obstacles independently, Strudel could determine when obstacles appeared, when the spawning rate increased, and when a burst of obstacles was triggered.
 
-Follow this page to learn more [about](https://strudel.cc/workshop/getting-started/).
+To accomplish this, I used **Open Sound Control (OSC)**.
 
+### What is OSC?
+
+OSC is a communication protocol used to send structured messages between applications and devices. It is commonly used in music software, interactive installations, and real-time control systems.
+
+OSC messages can contain an address and associated values. They do not need to transmit audio; they can communicate commands that another application interprets.
+
+In this project, OSC acted as the connection between Strudel's musical patterns and Unity's gameplay systems.
+
+### System architecture
+
+The communication pipeline consisted of four main components:
+
+1. **Strudel:** Generates musical patterns and timed control events.
+2. **OSC bridge:** Connects the browser-based Strudel editor to the local OSC destination.
+3. **Unity OSC receiver:** Receives and dispatches OSC messages.
+4. **Obstacle spawner:** Interprets the commands and executes the corresponding gameplay actions.
+
+The data flow was:
+
+```text
+Strudel browser editor
+        |
+        | WebSocket
+        v
+@strudel/osc bridge
+        |
+        | OSC over UDP
+        v
+Unity OSC receiver
+        |
+        | /dirt/play
+        v
+ObstacleSpawner.cs
+        |
+        +--> SpawnObstacle()
+        |
+        +--> DecreaseObstacleSpawnTime()
+        |
+        +--> SpawnBurst()
+        |
+        +--> Start / Stop handling
+```
+
+The separation of responsibilities was important. Strudel controlled the timing of events, the bridge transported messages, and Unity remained responsible for creating and managing game objects.
+
+### Installing the OSC bridge with pnpm
+
+I used **pnpm**, a package manager for Node.js, to run the Strudel OSC bridge.
+
+First, I installed pnpm globally:
+
+```bash
+npm install --global pnpm
+```
+
+Then I used the package runner to launch the bridge:
+
+```bash
+pnpm dlx @strudel/osc --port 6969 --debug
+```
+
+The `pnpm dlx` command runs a package without requiring it to be installed as a permanent project dependency.
+
+The `--debug` option provides diagnostic output, helping me inspect the bridge's startup configuration and troubleshoot communication.
+
+During testing, the bridge reported a WebSocket server at `ws://localhost:8080` and an OSC output destination at `127.0.0.1:57120`.
+
+The `--port 6969` argument did not change the OSC output port in my tests. Therefore, I used the actual startup logs to identify the destination port rather than assuming the argument had changed it.
+
+The browser-based Strudel editor needed to connect to the bridge's WebSocket endpoint. Unity, in turn, needed to listen on the corresponding OSC UDP port.
+
+Package reference: [@strudel/osc on npm](https://www.npmjs.com/package/@strudel/osc).
+
+### Sending OSC events from Strudel
+
+Strudel's `.osc()` function sends pattern events through the configured OSC output.
+
+A simple example is:
+
+```javascript
+setcps(110/60/4)
+
+$: s("spawn ~ ~ ~ ~").osc()
+```
+
+The pattern sends a `spawn` event followed by rests. The rests prevent additional events from being emitted at those positions.
+
+The tempo expression sets the cycle speed to approximately 0.4583 cycles per second, corresponding to 110 beats per minute in a four-beat bar.
+
+The bridge forwards the event to Unity using the `/dirt/play` OSC address. The Unity receiver listens for this address and examines the message's values to identify the requested action.
+
+The audio pattern and the OSC pattern are separate. Playing a drum sample does not automatically spawn an obstacle; the OSC pattern is what sends the gameplay command.
+
+## Day 5 — Implementing the Unity obstacle spawner
+
+I implemented the gameplay side in C# using an `ObstacleSpawner` component.
+
+The component was responsible for instantiating obstacles and responding to commands received through OSC.
+
+### Spawning an obstacle
+
+The `SpawnObstacle()` method instantiated an obstacle prefab selected from a collection of available prefabs.
+
+At a high level, the process was:
+
+1. Select an obstacle prefab.
+2. Instantiate it at the configured spawn location.
+3. Let the obstacle's existing gameplay components handle movement and collision behavior.
+
+The OSC message did not instantiate the obstacle directly. It instructed the spawner to call the existing gameplay method.
+
+### Changing the spawning rate
+
+The `DecreaseObstacleSpawnTime(float amount)` method reduced the time interval between obstacle spawns.
+
+A shorter interval produces obstacles more frequently, increasing the difficulty of the endless runner.
+
+For example, Strudel could send:
+
+```javascript
+$: s("~ ~ ~ increaseRate ~ ~ ~ ~").osc()
+```
+
+When Unity receives the `increaseRate` command, the handler calls `DecreaseObstacleSpawnTime()` using the supplied amount or a default value of `0.1`.
+
+Because each command changes the existing interval, repeated messages can progressively increase the difficulty. The implementation should therefore enforce a minimum interval to prevent excessively frequent spawning.
+
+### Triggering an obstacle burst
+
+The `SpawnBurst(int count)` method started a coroutine that spawned multiple obstacles over a short period.
+
+This differs from `SpawnObstacle()`, which creates a single obstacle immediately.
+
+The corresponding Strudel pattern was:
+
+```javascript
+$: s("~ ~ ~ ~ ~ ~ ~ burst").osc()
+```
+
+When the `burst` event reaches Unity, the spawner starts the burst coroutine. The number of obstacles comes from the supplied amount or the configured default burst count.
+
+This approach separates the timing of the event from the behavior that follows it: Strudel determines when the burst starts, while Unity controls how the burst is executed.
+
+### Starting and stopping spawning
+
+The spawner also handled `start` and `stop` commands.
+
+In the original implementation, automatic spawning was controlled through a coroutine. For the OSC-only version, I removed automatic spawning so obstacles would appear only in response to incoming commands.
+
+In that version:
+
+- `start` reports that automatic spawning is disabled.
+- `stop` cancels an active burst.
+- Individual `spawn` events still create obstacles.
+- A `burst` event starts a sequence of obstacle spawns.
+
+This distinction is important: disabling automatic spawning does not mean the spawner is disabled. It means that the external control system determines when spawning occurs.
+
+### Parsing OSC messages
+
+The custom Unity OSC receiver registered a handler for `/dirt/play`.
+
+When a message arrived, the spawner inspected its values for a string parameter identified by `s`, then read the following string as the action name. It also looked for an optional numeric `gameAmount` value.
+
+The handler mapped the received action to the corresponding method.
+
+| OSC command | Unity behavior |
+|---|---|
+| `spawn` | Calls `SpawnObstacle()`. |
+| `increaseRate` | Calls `DecreaseObstacleSpawnTime()` with the requested amount or default value. |
+| `burst` | Starts `SpawnBurst()` with the requested count or default count. |
+| `start` | Reports that automatic spawning is disabled. |
+| `stop` | Cancels an active burst. |
+
+This design allowed several gameplay actions to share one OSC address while being distinguished by their message values.
+
+The exact argument layout must match the message emitted by the bridge. When recreating the project, inspect the debug output and confirm what Unity actually receives. If the message does not contain the expected `s` or `gameAmount` fields, the parser must be adapted to the actual format.
+
+## Day 6 — Combining music and gameplay
+
+After testing the communication pipeline, I combined the musical patterns and OSC commands in a single Strudel composition.
+
+I organized the piece into independent blocks. Each block represented a musical layer and, where applicable, a corresponding gameplay action.
+
+```javascript
+setcps(110/60/4)
+
+// 0 = OFF, 1 = ON
+const block1 = 1
+const block2 = 1
+const block3 = 1
+const block4 = 1
+
+// BLOCK 1: DRUMS
+$: block1
+  ? s("bd ~ sd ~, ~ ~ bd ~").gain(0.85)
+  : silence
+
+// BLOCK 1: OBSTACLE SPAWNING
+$: block1
+  ? s("spawn ~ ~ ~ ~ ~ ~ ~").osc()
+  : silence
+
+// BLOCK 2: BASS
+$: block2
+  ? note("<d2 d2 f2 c2>")
+      .s("sawtooth")
+      .lpf(500)
+      .gain(0.45)
+  : silence
+
+// BLOCK 2: INCREASE SPAWNING RATE
+$: block2
+  ? s("~ ~ ~ increaseRate ~ ~ ~ ~").osc()
+  : silence
+
+// BLOCK 3: MEDIEVAL MELODY
+$: block3
+  ? note("<d4 f4 a4 c5 a4 f4 e4 d4>")
+      .slow(2)
+      .s("gm_acoustic_guitar_nylon")
+      .gain(0.65)
+      .room(0.25)
+  : silence
+
+// BLOCK 3: OBSTACLE BURST
+$: block3
+  ? s("~ ~ ~ ~ ~ ~ ~ burst").osc()
+  : silence
+
+// BLOCK 4: PERCUSSION
+$: block4
+  ? s("hh*8").gain(0.3)
+  : silence
+
+// BLOCK 4: ADDITIONAL OBSTACLE SPAWN
+$: block4
+  ? s("~ ~ ~ ~ spawn ~ ~ ~").osc()
+  : silence
+```
+
+### Controlling blocks
+
+The `block1`, `block2`, `block3`, and `block4` variables act as simple switches.
+
+Setting a block to `1` enables its pattern, while setting it to `0` replaces it with silence.
+
+This allowed me to test different combinations of music and gameplay without deleting patterns from the composition.
+
+### Relating musical density to gameplay
+
+The first and fourth blocks both send `spawn` commands. Enabling both means that their events can overlap, increasing the number of spawning commands received by Unity.
+
+The second block sends `increaseRate`, while the third triggers a burst.
+
+This creates different kinds of interaction:
+
+- Repeated spawning introduces individual obstacles.
+- Rate changes affect the pace at which obstacles appear.
+- Bursts produce short sequences of obstacles.
+
+The result is a system where the musical pattern can influence the intensity and timing of gameplay.
+
+One important limitation is that the patterns operate independently. If multiple blocks send commands simultaneously, their effects accumulate. The composition must therefore be designed carefully to avoid unintended increases in difficulty.
+
+## Day 7 — Developing a medieval rock composition
+
+After establishing the OSC connection, I changed the music to a medieval-inspired rock track.
+
+The goal was to combine the melodic character of fantasy music with the energy of rock. I used a minor-key progression, guitar-like sounds, distorted chords, low bass notes, and driving percussion.
+
+The composition included several layers.
+
+### War drums and percussion
+
+The drum patterns established the rhythmic foundation. Repeating kick and snare-like events created a steady pulse, while faster hi-hat patterns added movement.
+
+The same rhythmic structure could be paired with OSC events, allowing the musical rhythm to provide a timing reference for gameplay commands.
+
+### Bass
+
+I used a low-pitched synthesizer pattern to reinforce the harmonic progression and give the music more weight.
+
+```javascript
+note("<d2 d2 f2 c2>")
+  .s("sawtooth")
+  .lpf(500)
+  .gain(0.45)
+```
+
+The sawtooth waveform provides a harmonically rich sound. The low-pass filter reduces high-frequency content, helping the bass sit lower in the mix.
+
+### Medieval-inspired melody
+
+The melody used a guitar-like sound and a minor-key note sequence.
+
+```javascript
+note("<d4 f4 a4 c5 a4 f4 e4 d4>")
+  .slow(2)
+  .s("gm_acoustic_guitar_nylon")
+  .gain(0.65)
+  .room(0.25)
+```
+
+The slower melodic phrasing contrasts with the faster percussion. The room effect adds a sense of space.
+
+The medieval character comes primarily from the melodic phrasing and harmonic choices rather than from the instrument alone.
+
+### Distorted power chords
+
+I added a repeating chord progression to introduce a heavier rock texture.
+
+```javascript
+note("<[d3,a3,d4] [bb2,f3,bb3] [f3,c4,f4] [c3,g3,c4]>")
+  .s("sawtooth")
+  .lpf(1400)
+  .distort(0.55)
+  .slow(2)
+  .gain(0.3)
+```
+
+Each bracketed group represents notes played simultaneously. The progression provides the harmonic foundation, while distortion adds harmonic content and a more aggressive tone.
+
+### Galloping low strings
+
+I also used repeated low notes to create a galloping rhythmic motion. This helped reinforce the driving quality of the arrangement and its fantasy-action atmosphere.
+
+The main technical advantage of this stage was that I could modify the music without changing the Unity obstacle-spawning implementation. As long as the OSC command patterns continued to send the expected actions, the gameplay system remained compatible with the new composition.
+
+## Recreating the project from scratch
+
+The following steps describe how to recreate the integration using Strudel, pnpm, an OSC bridge, and Unity.
+
+### 1. Install the required software
+
+Install:
+
+- [Node.js](https://nodejs.org/), which provides the runtime for the OSC bridge.
+- [pnpm](https://pnpm.io/installation), which manages and executes Node.js packages.
+- [Unity](https://unity.com/), which runs the endless runner.
+- [Strudel](https://strudel.cc/), which generates the music and OSC events.
+
+You will also need an OSC receiver in Unity. You can reuse the custom receiver used in this project or choose an OSC package compatible with your Unity version.
+
+### 2. Install pnpm
+
+Open a terminal and run:
+
+```bash
+npm install --global pnpm
+```
+or
+```bash
+npm install --global --allow-scripts=pnpm pnpm@12.14.0
+```
+
+Verify the installation:
+
+```bash
+pnpm --version
+```
+
+```bash
+pnpm i
+```
+
+### 3. Start the Strudel OSC bridge
+
+Run:
+
+```bash
+pnpm run osc
+```
+
+Keep the terminal running while testing.
+
+During the original setup, the bridge reported `ws://localhost:8080` as the WebSocket endpoint and `127.0.0.1:57120` as the OSC destination.
+
+The `--port 6969` argument did not change the reported OSC output port in my tests. Confirm the actual ports from the startup logs rather than assuming that the argument changes the destination.
+
+### 4. Configure Unity's OSC receiver
+
+In Unity:
+
+1. Add the OSC receiver to an active GameObject.
+2. Configure its incoming UDP port to match the bridge's actual OSC output port.
+3. Register a handler for `/dirt/play`.
+4. Add the `ObstacleSpawner` component.
+5. Assign the obstacle prefabs and any required spawn references.
+6. Disable independent automatic spawning if every obstacle must be triggered by OSC.
+
+If you use a different OSC receiver package, adapt the message-handler code to that package's API and data types.
+
+### 5. Test a single spawn event
+
+Start with a minimal Strudel pattern:
+
+```javascript
+$: s("spawn ~ ~ ~").osc()
+```
+
+Check the bridge's debug output and Unity's console.
+
+If the bridge receives events but Unity does not, verify the destination address and UDP port. If Unity receives a message but no obstacle appears, inspect the handler and confirm that it recognizes the `spawn` command.
+
+### 6. Add the other commands
+
+Once individual spawning works, test the rate-change and burst commands separately:
+
+```javascript
+$: s("increaseRate ~ ~ ~").osc()
+```
+
+```javascript
+$: s("burst ~ ~ ~").osc()
+```
+
+Confirm that Unity interprets the action strings correctly and that the methods produce the expected behavior before combining them with musical patterns.
+
+### 7. Combine audio and OSC patterns
+
+Create separate patterns for the musical layers and gameplay commands. Use Strudel's sequencing and layering functions to arrange the composition, and `.osc()` to send control events.
+
+Keep the command names consistent between the Strudel patterns and the Unity parser.
+
+### 8. Tune the gameplay response
+
+Adjust the number and frequency of spawning commands, the rate-change amount, and the burst count.
+
+Add a minimum spawn interval and a maximum burst count to protect performance and prevent excessively difficult gameplay.
+
+### 9. Test the complete system
+
+Run Strudel and Unity together and verify that:
+
+- `spawn` creates an obstacle.
+- `increaseRate` changes the spawning interval.
+- `burst` triggers the configured number of obstacles.
+- Disabling a block stops its corresponding pattern.
+- No independent automatic spawner creates obstacles unexpectedly.
+- Multiple enabled blocks do not create an unintended number of obstacles.
+- The game remains responsive during dense patterns.
+
+## Technical considerations
+
+### OSC timing and synchronization
+
+Strudel schedules its events according to musical time, but OSC messages travel through a separate communication path. Local UDP communication is appropriate for this kind of interaction, but it does not guarantee exact synchronization between a sound and its corresponding gameplay action.
+
+For applications requiring tighter audiovisual synchronization, timestamp-aware scheduling or a more explicit synchronization mechanism may be necessary.
+
+### Preventing runaway difficulty
+
+Repeated `increaseRate` commands can continually reduce the spawning interval. The Unity implementation should enforce a minimum interval and validate incoming values.
+
+Similarly, burst commands should have a maximum count to prevent excessive object creation.
+
+### Separating responsibilities
+
+The architecture is easier to maintain when each component has a clear role:
+
+- Strudel defines the music and command timing.
+- The OSC bridge transports messages.
+- The Unity receiver dispatches incoming messages.
+- The obstacle spawner implements gameplay behavior.
+
+This separation allows the musical arrangement to change without requiring the gameplay code to be rewritten.
+
+## Conclusion
+
+This project allowed me to explore how a live-coded music system can become an interactive control system for a video game.
+
+I progressed from creating simple rhythms and translating an existing composition into Strudel to building a medieval rock arrangement and connecting musical events to a Unity endless runner through OSC.
+
+The most important technical result was the communication pipeline: Strudel generated timed commands, the pnpm-run OSC bridge forwarded them, and Unity interpreted them to control obstacle spawning.
+
+Although the prototype focused on an endless runner, the same architecture could be extended to other gameplay systems, including enemy behavior, environmental events, animation triggers, lighting, and dynamic difficulty.
+
+## References
+
+- [Strudel — Getting Started](https://strudel.cc/workshop/getting-started/)
+- [Strudel — Technical Manual](https://strudel.cc/technical-manual/)
+- [Strudel OSC package](https://www.npmjs.com/package/@strudel/osc)
+- [pnpm documentation](https://pnpm.io/)
+- [Unity](https://unity.com/)
